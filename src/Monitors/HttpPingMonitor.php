@@ -23,6 +23,9 @@ class HttpPingMonitor extends BaseMonitor
     /**  @var string */
     protected $url;
 
+    /**  @var int */
+    protected $checkCode = 200;
+
     /**  @var bool|string */
     protected $checkPhrase = false;
 
@@ -39,6 +42,10 @@ class HttpPingMonitor extends BaseMonitor
     {
         if (!empty($config['url'])) {
             $this->url = $config['url'];
+        }
+
+        if (!empty($config['checkCode'])) {
+            $this->checkCode = $config['checkCode'];
         }
 
         if (!empty($config['checkPhrase'])) {
@@ -77,7 +84,7 @@ class HttpPingMonitor extends BaseMonitor
         } catch (ConnectException $e) {
         }
 
-        if ($this->responseCode != '200'
+        if ($this->responseCode != $this->checkCode
             || ! $this->checkResponseContains($this->responseContent, $this->checkPhrase)) {
             event(new HttpPingDown($this));
         } else {
@@ -92,7 +99,7 @@ class HttpPingMonitor extends BaseMonitor
         }
 
         $this->responseContainsPhrase = str_contains($html, $phrase);
-        
+
         return $this->responseContainsPhrase;
     }
 

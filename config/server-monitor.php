@@ -28,7 +28,7 @@ return [
         ],
         /*
          * HttpPing will perform an HTTP request to the configured URL and alert if the response code
-         * is not 200, or if the optional checkPhrase is not found in the response.
+         * is not 200 (if optional checkCode is not setted), or if the optional checkPhrase is not found in the response.
          */
         'HttpPing' => [
             [
@@ -36,6 +36,7 @@ return [
             ],
             [
                 'url' => 'http://www.example.com/',
+                'checkCode' => 200,
                 'checkPhrase' => 'Example Domain',
                 'timeout' => 10,
                 'allowRedirects' => false,
