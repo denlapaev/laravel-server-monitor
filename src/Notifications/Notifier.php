@@ -27,7 +27,7 @@ class Notifier
         $this->log = $log;
 
         $this->serverName = config('server-monitor.server.name');
-        $this->logLevel = config('server-monitor.loglevel');
+        $this->logLevel = config('server-monitor.notifications.loglevel');
 
         $this->subject = "{$this->serverName} Server Monitoring";
     }
@@ -134,6 +134,7 @@ class Notifier
     protected function sendNotification($eventName, $subject, $message, $type)
     {
         $senderNames = config("server-monitor.notifications.events.{$eventName}");
+        $logLevel = $this->logLevel;
 
         collect($senderNames)
             ->map(function ($senderName) {
@@ -145,8 +146,8 @@ class Notifier
 
                 return app($className);
             })
-            ->each(function (SendsNotifications $sender) use ($subject, $message, $type) {
-                if ($this->logLevel === 0 || ($this->logLevel === 1 && $type === BaseSender::TYPE_ERROR)) {
+            ->each(function (SendsNotifications $sender) use ($subject, $message, $type, $logLevel) {
+                if ($logLevel === 0 || ($logLevel === 1 && $type === BaseSender::TYPE_ERROR)) {
                     try {
                         $sender
                             ->setSubject($subject)
