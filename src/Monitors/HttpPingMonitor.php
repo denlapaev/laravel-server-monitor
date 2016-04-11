@@ -81,6 +81,7 @@ class HttpPingMonitor extends BaseMonitor
         } catch (ClientException $e) {
             $response = $e->getResponse();
             $this->responseCode = $response->getStatusCode();
+            $this->responseContent = (string)$response->getBody();
         } catch (ConnectException $e) {
         }
 
