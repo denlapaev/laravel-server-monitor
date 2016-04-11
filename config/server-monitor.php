@@ -65,6 +65,8 @@ return [
          */
         'handler' => EricMakesStuff\ServerMonitor\Notifications\Notifier::class,
 
+        'loglevel' => 0,
+
         /*
          * Here you can specify the ways you want to be notified when certain
          * events take place. Possible values are "log", "mail", "slack" and "pushover".

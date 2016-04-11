@@ -17,6 +17,7 @@ class Notifier
     protected $log;
 
     protected $serverName;
+    protected $logLevel = 0;
 
     /**
      * @param \Illuminate\Contracts\Logging\Log $log
@@ -26,6 +27,7 @@ class Notifier
         $this->log = $log;
 
         $this->serverName = config('server-monitor.server.name');
+        $this->logLevel = config('server-monitor.loglevel');
 
         $this->subject = "{$this->serverName} Server Monitoring";
     }
@@ -144,19 +146,21 @@ class Notifier
                 return app($className);
             })
             ->each(function (SendsNotifications $sender) use ($subject, $message, $type) {
-                try {
-                    $sender
-                        ->setSubject($subject)
-                        ->setMessage($message)
-                        ->setType($type)
-                        ->send();
-                } catch (Exception $exception) {
-                    $errorMessage = "Server Monitor notifier failed because {$exception->getMessage()}"
-                        .PHP_EOL
-                        .$exception->getTraceAsString();
+                if ($this->logLevel === 0 || ($this->logLevel === 1 && $type === BaseSender::TYPE_ERROR)) {
+                    try {
+                        $sender
+                            ->setSubject($subject)
+                            ->setMessage($message)
+                            ->setType($type)
+                            ->send();
+                    } catch (Exception $exception) {
+                        $errorMessage = "Server Monitor notifier failed because {$exception->getMessage()}"
+                            . PHP_EOL
+                            . $exception->getTraceAsString();
 
-                    $this->log->error($errorMessage);
-                    consoleOutput()->error($errorMessage);
+                        $this->log->error($errorMessage);
+                        consoleOutput()->error($errorMessage);
+                    }
                 }
             });
     }
